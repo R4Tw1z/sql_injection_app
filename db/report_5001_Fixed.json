@@ -1,0 +1,137 @@
+{
+  "finding": "FIND-0042",
+  "type": "sql_injection",
+  "target": "http://localhost:5001/api/v1/login",
+  "app_mode": "VULNERABLE",
+  "timestamp": "2026-03-17T09:50:59Z",
+  "baseline": {
+    "status": 401,
+    "hash": "6ae5deeecaa344181245728749fc96559b5832af56c6f894ffcdef99d1632727",
+    "latency": 0.031
+  },
+  "summary": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "verdict": "REMEDIATION SUCCESSFUL",
+  "results": [
+    {
+      "id": "TC-01",
+      "category": "Classic Auth Bypass",
+      "payload": "' OR '1'='1' OR '1'='1",
+      "description": "OR-based tautology \u2014 bypasses WHERE clause entirely",
+      "status_code": 401,
+      "response_time": 0.022,
+      "hash_match": true,
+      "anomalies": [],
+      "verdict": "PASS",
+      "error": null,
+      "response_snippet": "{   \"message\": \"Invalid credentials\",   \"status\": \"fail\" } "
+    },
+    {
+      "id": "TC-02a",
+      "category": "Blind Boolean (True)",
+      "payload": "' OR 1=1-- -",
+      "description": "Boolean true \u2014 should return rows if vulnerable",
+      "status_code": 401,
+      "response_time": 0.027,
+      "hash_match": true,
+      "anomalies": [],
+      "verdict": "PASS",
+      "error": null,
+      "response_snippet": "{   \"message\": \"Invalid credentials\",   \"status\": \"fail\" } "
+    },
+    {
+      "id": "TC-02b",
+      "category": "Blind Boolean (False)",
+      "payload": "' OR 1=2-- -",
+      "description": "Boolean false \u2014 differential vs TC-02a confirms injection",
+      "status_code": 401,
+      "response_time": 0.044,
+      "hash_match": true,
+      "anomalies": [],
+      "verdict": "PASS",
+      "error": null,
+      "response_snippet": "{   \"message\": \"Invalid credentials\",   \"status\": \"fail\" } "
+    },
+    {
+      "id": "TC-03",
+      "category": "Time-Based Blind",
+      "payload": "' OR (SELECT 1 FROM (SELECT(randomblob(500000000)))t)-- -",
+      "description": "Heavy computation to simulate timing delay in SQLite",
+      "status_code": 401,
+      "response_time": 0.042,
+      "hash_match": true,
+      "anomalies": [],
+      "verdict": "PASS",
+      "error": null,
+      "response_snippet": "{   \"message\": \"Invalid credentials\",   \"status\": \"fail\" } "
+    },
+    {
+      "id": "TC-04",
+      "category": "Error-Based",
+      "payload": "' AND 1=CAST((SELECT group_concat(username) FROM users) AS INTEGER)-- -",
+      "description": "Force type mismatch to leak data via error message",
+      "status_code": 401,
+      "response_time": 0.021,
+      "hash_match": true,
+      "anomalies": [],
+      "verdict": "PASS",
+      "error": null,
+      "response_snippet": "{   \"message\": \"Invalid credentials\",   \"status\": \"fail\" } "
+    },
+    {
+      "id": "TC-05",
+      "category": "Encoding Bypass (no quotes)",
+      "payload": "' UNION SELECT 1,hex(password),3,4 FROM users WHERE username=char(97,100,109,105,110)-- -",
+      "description": "Hex + char() encoding \u2014 no string literals used, bypasses quote sanitizer",
+      "status_code": 401,
+      "response_time": 0.019,
+      "hash_match": true,
+      "anomalies": [],
+      "verdict": "PASS",
+      "error": null,
+      "response_snippet": "{   \"message\": \"Invalid credentials\",   \"status\": \"fail\" } "
+    },
+    {
+      "id": "TC-06",
+      "category": "Second-Order",
+      "payload": "admin'-- -",
+      "description": "Stored injection \u2014 malicious value safe on write, executes on reuse",
+      "status_code": 401,
+      "response_time": 0.035,
+      "hash_match": true,
+      "anomalies": [],
+      "verdict": "PASS",
+      "error": null,
+      "response_snippet": "{   \"message\": \"Invalid credentials\",   \"status\": \"fail\" } "
+    },
+    {
+      "id": "TC-07",
+      "category": "WAF Bypass",
+      "payload": "' UN/**/ION SE/**/LECT 1,group_concat(username),3,4 FROM users-- -",
+      "description": "Inline comment obfuscation \u2014 breaks WAF keyword signatures",
+      "status_code": 401,
+      "response_time": 0.067,
+      "hash_match": true,
+      "anomalies": [],
+      "verdict": "PASS",
+      "error": null,
+      "response_snippet": "{   \"message\": \"Invalid credentials\",   \"status\": \"fail\" } "
+    },
+    {
+      "id": "TC-08",
+      "category": "Input Sanitization Specific",
+      "payload": "' UNION SELECT 1,group_concat(username||':'||password),3,4 FROM users-- -",
+      "description": "UNION extraction \u2014 targets sanitization gap, quote-doubling still produces valid SQL",
+      "status_code": 401,
+      "response_time": 0.055,
+      "hash_match": true,
+      "anomalies": [],
+      "verdict": "PASS",
+      "error": null,
+      "response_snippet": "{   \"message\": \"Invalid credentials\",   \"status\": \"fail\" } "
+    }
+  ]
+} 
