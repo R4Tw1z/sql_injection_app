@@ -1,4 +1,4 @@
-# Remediator-py — SQL Injection Remediation Verification Tool
+# SQL-i Remediation Verification Tool
 
 A generic, pipeline-ready tool that verifies whether SQL injection vulnerabilities have been properly remediated. Pass any target URL and payload list. the tool handles the rest.
 
@@ -96,9 +96,16 @@ The included `config.json` ships with 33 payloads across 8 attack categories.
         Risk   : None -- payload had no effect on response
 ```
 
-**FAIL** means the payload produced a measurable change in the application's response — status code shifted, response body changed, or response time spiked. The Risk line classifies severity based on how many anomaly types fired simultaneously.
+- **FAIL** means the payload produced a measurable change in the application's response: 
+    - Status code shifted 
+    - Response body changed, or response time spiked. 
+    - The Risk line classifies severity based on how many anomaly types fired simultaneously
 
-**PASS** means the payload had zero effect — the application returned an identical response to the clean baseline. Against a properly fixed app using parameterized queries, all payloads return PASS because user input is bound as a typed value and never interpreted as SQL syntax.
+
+- **PASS** means the payload had zero effect:  
+    - The application returned an identical response to the clean baseline. 
+    - Against a properly fixed app using parameterized queries, all payloads return PASS because user input is bound as a typed value and never interpreted as SQL syntax.
+
 
 ---
 
