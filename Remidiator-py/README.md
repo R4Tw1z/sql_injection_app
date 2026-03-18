@@ -1,4 +1,4 @@
-# Rremediator-py — SQL Injection Remediation Verification Tool
+# Remediator-py — SQL Injection Remediation Verification Tool
 
 A generic, pipeline-ready tool that verifies whether SQL injection vulnerabilities have been properly remediated. Pass any target URL and payload list. the tool handles the rest.
 
