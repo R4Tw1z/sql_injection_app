@@ -6,7 +6,10 @@ A generic, pipeline-ready tool that verifies whether SQL injection vulnerabiliti
 
 ## How It Works
 
-On each run the tool performs three phases. First, a **reachability check** confirms the target is live. Second, a **dynamic baseline** is established by sending two clean requests and computing the SHA-256 hash of the response no manual hash configuration needed. Third, each payload is fired and the response is compared against the baseline across three anomaly vectors: response hash deviation, HTTP status code change, and response time exceeding the 4-second threshold.
+**On each run the tool performs three phases.** 
+  - **Reachability check** confirms the target is live. 
+  - **Dynamic baseline** is established by sending two clean requests and computing the SHA-256 hash of the response no manual hash configuration needed.
+  - Each payload is fired and the response is compared against the baseline across three anomaly vectors: response hash deviation, HTTP status code change, and response time exceeding the 4-second threshold.
 
 ---
 
